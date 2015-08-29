@@ -72,6 +72,7 @@ void MainWindow::on_pushFile_clicked()
     ui->listItem->clear();
     ui->listItem->setRowCount(0);
     ui->listItem->setColumnCount(3);
+    signalMapper=new QSignalMapper();
     for(int i=0; i<pathList.size(); ++i)
     {
         QString path=QDir::toNativeSeparators(pathList.at(i)); //把斜杠转化成反斜杠
@@ -87,15 +88,17 @@ void MainWindow::on_pushFile_clicked()
 
             //QVector<QComboBox*>a;
             QComboBox *comBox = new QComboBox();
-            comBox->addItem("Y");
-            comBox->addItem("N");
+            comBox->addItem("LOVE");
+            comBox->addItem("DISLIKE");
             ui->listItem->setCellWidget(rownum,1,comBox);
-            //connect(comBox,SIGNAL(activated(int)),this,SLOT(close()));
+            connect(comBox,SIGNAL(activated(int)),signalMapper,SLOT(map()));
+            signalMapper->setMapping(comBox,rownum);
 
             //ui->listItem->item(rownum,1)->setFlags(Qt::NoItemFlags);
             //ui->listItem->item(rownum,2)->setFlags(Qt::NoItemFlags);
         }
     }
+    connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(processCombox(int)));
     playSound.setFileList(pathList);
 }
 
@@ -114,5 +117,14 @@ void MainWindow::on_listItem_cellClicked(int row, int column)
 //        QComboBox *combox=(QComboBox*)widget;//强制转化为QComboBox
 //        QString string=combox->currentText();
 //        qDebug()<<string;
-//    }
+    //    }
+}
+
+void MainWindow::processCombox(int row_num)
+{
+    //qDebug()<<"current click is: "<<row_num;
+    QTableWidgetItem *item=ui->listItem->item(row_num,0);
+    item->setBackgroundColor(QColor(255,0,0));
+    ui->listItem->setItem(row_num,0,item);
+    //delete item;
 }
